@@ -25,7 +25,7 @@ const credit=s=>{const p=PH[s.id];if(!p)return "";return `${p.n?`<span class="pn
 
 function labelTables(root){$$("table.tbl",root).forEach(t=>{const h=$$("thead th",t).map(x=>x.textContent.trim());if(!h.length)return;$$("tbody tr",t).forEach(tr=>{Array.from(tr.children).forEach((c,i)=>{if(i>0&&h[i])c.setAttribute("data-label",h[i]);});});});}
 /* ───────── state ───────── */
-const st={view:"atlas",grp:"all",lvl:"all",cat:false,sort:"group",tag:"",q:"",vq:"",vcat:"P",vtag:"",vga:false,vrow:false,lesson:store.get("lesson",1)};
+const st={cols:store.get("cols","2"),view:"atlas",grp:"all",lvl:"all",cat:false,sort:"group",tag:"",q:"",vq:"",vcat:"P",vtag:"",vga:false,vrow:false,lesson:store.get("lesson",1)};
 let done=store.get("done",[]), checks=store.get("checks",[]);
 
 /* ───────── atlas ───────── */
@@ -52,7 +52,7 @@ function renderAtlasControls(){
 function card(s){
   const g=G[s.g];
   return `<article class="card" style="--gh:${g.hue}"><button class="card-btn" data-sp="${s.id}" aria-label="查看 ${esc(s.zh)} 详情">
-  <div class="sheet">${pic(s)}<span class="acc">${acc(s.no)}</span><span class="fam">${esc(g.la.split(" ·")[0].split(" ")[0])}</span></div>
+  <div class="sheet">${pic(s)}<span class="acc">${acc(s.no)}</span><span class="fam">${esc(g.la.split(" ·")[0].split(" ")[0])}</span><span class="cap"><b>${esc(s.zh)}</b><i>${esc(s.la)}</i></span></div>
   <div class="cb"><h3>${esc(s.zh)}</h3><p class="latin">${esc(s.la)}</p>
   <div class="meta">${dots(s.d)}<span class="lv">${DIFF[s.d]}</span><span class="pr" title="价格档">${"$".repeat(s.p)}<s>${"$".repeat(5-s.p)}</s></span><span class="li" title="${LIGHT[s.L]}">${lightIcon(s.L)}${["","耐阴","散射光","强光"][s.L]}</span><span class="cat ${s.cat}">${CATL[s.cat]}</span></div>
   <p class="hook">${esc(s.id_)}</p>
@@ -63,6 +63,7 @@ function renderAtlas(){
   const a=filtered();
   const gi=st.grp!=="all"?G[st.grp]:null;
   $("#ginfo").innerHTML=gi?`<div class="ginfo" style="--gh:${gi.hue}"><div><p class="eyebrow">${esc(gi.la)}</p><h2>${esc(gi.zh)}</h2><p>${esc(gi.intro)}</p></div><ul>${gi.keys.map(k=>`<li>${esc(k)}</li>`).join("")}</ul></div>`:"";
+  $("#grid").classList.toggle("one",st.cols==="1");$$("#cols button").forEach(b=>b.classList.toggle("on",b.dataset.cols===st.cols));
   $("#acount").textContent=`显示 ${a.length} / ${SP.length} 个物种`+(st.q?`（搜索“${st.q}”）`:"");
   $("#grid").innerHTML=a.length?a.map(card).join(""):`<p class="empty">没有符合条件的物种。试试清除筛选，或换个关键词（中文名、学名、英文名都可以）。<button class="btn" id="clearf">清除筛选</button></p>`;
 }
@@ -210,6 +211,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.grp){st.grp=t.dataset.grp;renderAtlas();return;}
   if(t.dataset.gogrp){Object.assign(st,{grp:t.dataset.gogrp,lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";show("atlas");$("#views").scrollIntoView({block:"start"});return;}
   if(t.dataset.lvl){st.lvl=t.dataset.lvl;renderAtlas();return;}
+  if(t.dataset.cols){st.cols=t.dataset.cols;store.set("cols",st.cols);renderAtlas();return;}
   if(t.id==="catsafe"){st.cat=!st.cat;renderAtlas();return;}
   if(t.id==="clearf"){Object.assign(st,{grp:"all",lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";renderAtlas();return;}
   if(t.dataset.vcat){st.vcat=t.dataset.vcat;renderVendors();return;}
