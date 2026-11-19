@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>插图总览</title>
+<!-- 一次性渲染全部 87 个物种的示意插图（illo.js），用来检查插图引擎。照片上线后插图只作为无照片时的备用。 -->
+<style>:root{--specimen:#F5F5EC;--tape:#E6DBBB}body{margin:0;background:#ddd;font:11px sans-serif}.g{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;padding:4px}.c{background:var(--specimen)}.c svg{display:block;width:100%}.c p{margin:0;padding:2px 4px;background:#fff}</style></head>
+<body><div class="g" id="g"></div>
+<script src="../../docs/data-species.js"></script><script src="../../docs/illo.js"></script>
+<script>document.getElementById('g').innerHTML=SPECIES.map(s=>`<div class="c">${drawSpecimen(s)}<p>${s.id} · ${s.art.s}</p></div>`).join('')</script>
+</body></html>
