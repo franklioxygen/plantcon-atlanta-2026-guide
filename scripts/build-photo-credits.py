@@ -68,8 +68,10 @@ def main(zip_path: str) -> None:
             "p": v.get("page"),
             "f": v.get("file"),
             "n": NOTES.get(k, ""),
+            "w": v.get("w"),
+            "h": v.get("h"),
         }
-    js = "/* 照片署名：全部来自 Wikimedia Commons，已缩放为 640px 宽并压缩 */\nwindow.PHOTOS=" + json.dumps(out, ensure_ascii=False, indent=0) + ";\n"
+    js = "/* 照片署名：全部来自 Wikimedia Commons，已缩放为 640px 宽并压缩；w/h 为缩放后的像素尺寸 */\nwindow.PHOTOS=" + json.dumps(out, ensure_ascii=False, indent=0) + ";\n"
     (ROOT / "docs" / "data-photos.js").write_text(js, encoding="utf-8")
     print(f"照片 {sum(n.endswith('.jpg') for n in names)} 张，署名 {len(out)} 条，已写入 docs/")
 

@@ -20,7 +20,8 @@ const dots=d=>`<span class="dots" aria-label="难度 ${d}/5">${[1,2,3,4,5].map(i
 const lightIcon=L=>`<svg class="sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.2" fill="${L>=2?"currentColor":"none"}" stroke="currentColor" stroke-width="1.4"/>${L>=3?[0,45,90,135,180,225,270,315].map(a=>`<path d="M${(8+Math.cos(a*Math.PI/180)*5.2).toFixed(1)} ${(8+Math.sin(a*Math.PI/180)*5.2).toFixed(1)}L${(8+Math.cos(a*Math.PI/180)*7).toFixed(1)} ${(8+Math.sin(a*Math.PI/180)*7).toFixed(1)}" stroke="currentColor" stroke-width="1.3"/>`).join(""):""}</svg>`;
 const ART={};const art=s=>ART[s.id]||(ART[s.id]=window.drawSpecimen(s));
 const PH=window.PHOTOS||{};
-const pic=(s,eager)=>PH[s.id]?`<img src="photos/${s.id}.jpg" alt="${esc(s.zh)}（${esc(s.la)}）照片" ${eager?"":"loading=\"lazy\" "}decoding="async">`:art(s);
+const pic=(s,eager)=>{const p=PH[s.id];return p?`<img src="photos/${s.id}.jpg" alt="${esc(s.zh)}（${esc(s.la)}）照片"${p.w?` width="${p.w}" height="${p.h}"`:""} ${eager?"":"loading=\"lazy\" "}decoding="async">`:art(s);};
+const ratio=s=>{const p=PH[s.id];return p&&p.w?` style="aspect-ratio:${p.w}/${p.h}"`:"";};
 const credit=s=>{const p=PH[s.id];if(!p)return "";return `${p.n?`<span class="pnote">${esc(p.n)}</span>`:""}照片：${esc(p.a)} · ${p.lu?`<a href="${esc(p.lu)}" target="_blank" rel="noopener">${esc(p.l)}</a>`:esc(p.l)} · <a href="${esc(p.p)}" target="_blank" rel="noopener">Wikimedia Commons</a>`;};
 
 function labelTables(root){$$("table.tbl",root).forEach(t=>{const h=$$("thead th",t).map(x=>x.textContent.trim());if(!h.length)return;$$("tbody tr",t).forEach(tr=>{Array.from(tr.children).forEach((c,i)=>{if(i>0&&h[i])c.setAttribute("data-label",h[i]);});});});}
@@ -52,12 +53,14 @@ function renderAtlasControls(){
 function card(s){
   const g=G[s.g];
   return `<article class="card" style="--gh:${g.hue}"><button class="card-btn" data-sp="${s.id}" aria-label="查看 ${esc(s.zh)} 详情">
-  <div class="sheet">${pic(s)}<span class="acc">${acc(s.no)}</span><span class="fam">${esc(g.la.split(" ·")[0].split(" ")[0])}</span><span class="cap"><b>${esc(s.zh)}</b><i>${esc(s.la)}</i></span></div>
+  <div class="sheet"${ratio(s)}>${pic(s)}<span class="acc">${acc(s.no)}</span><span class="fam">${esc(g.la.split(" ·")[0].split(" ")[0])}</span></div>
   <div class="cb"><h3>${esc(s.zh)}</h3><p class="latin">${esc(s.la)}</p>
   <div class="meta">${dots(s.d)}<span class="lv">${DIFF[s.d]}</span><span class="pr" title="价格档">${"$".repeat(s.p)}<s>${"$".repeat(5-s.p)}</s></span><span class="li" title="${LIGHT[s.L]}">${lightIcon(s.L)}${["","耐阴","散射光","强光"][s.L]}</span><span class="cat ${s.cat}">${CATL[s.cat]}</span></div>
   <p class="hook">${esc(s.id_)}</p>
   <p class="where">${s.vcount?`相关卖家 <b>${s.vcount}</b> 家${s.vx.length?` · 如展位 <span class="mono">${esc(s.vx[0].first)}</span>`:""}`:"综合观叶摊位现场找"}</p></div></button></article>`;
 }
+const isPhone=()=>matchMedia("(max-width:640px)").matches;
+function gridCols(){if(isPhone())return st.cols==="1"?1:2;const w=($("#grid").clientWidth||document.documentElement.clientWidth-40);return Math.max(2,Math.floor((w+16)/(232+16)));}
 function renderAtlas(){
   renderAtlasControls();
   const a=filtered();
@@ -65,7 +68,12 @@ function renderAtlas(){
   $("#ginfo").innerHTML=gi?`<div class="ginfo" style="--gh:${gi.hue}"><div><p class="eyebrow">${esc(gi.la)}</p><h2>${esc(gi.zh)}</h2><p>${esc(gi.intro)}</p></div><ul>${gi.keys.map(k=>`<li>${esc(k)}</li>`).join("")}</ul></div>`:"";
   $("#grid").classList.toggle("one",st.cols==="1");$$("#cols button").forEach(b=>b.classList.toggle("on",b.dataset.cols===st.cols));
   $("#acount").textContent=`显示 ${a.length} / ${SP.length} 个物种`+(st.q?`（搜索“${st.q}”）`:"");
-  $("#grid").innerHTML=a.length?a.map(card).join(""):`<p class="empty">没有符合条件的物种。试试清除筛选，或换个关键词（中文名、学名、英文名都可以）。<button class="btn" id="clearf">清除筛选</button></p>`;
+  const grid=$("#grid");
+  if(!a.length){grid.innerHTML=`<p class="empty">没有符合条件的物种。试试清除筛选，或换个关键词（中文名、学名、英文名都可以）。<button class="btn" id="clearf">清除筛选</button></p>`;return;}
+  /* 瀑布流：照片保持原始比例，按顺序放进当前最短的一列 */
+  const n=gridCols();grid.dataset.n=n;grid.innerHTML=Array(n).fill('<div class="mcol"></div>').join("");
+  const cols=$$(".mcol",grid),tmp=document.createElement("div");
+  a.forEach(s=>{tmp.innerHTML=card(s);let c=cols[0];for(const x of cols)if(x.offsetHeight<c.offsetHeight)c=x;c.appendChild(tmp.firstElementChild);});
 }
 
 /* ───────── species detail ───────── */
@@ -242,6 +250,7 @@ $("#aq").addEventListener("input",e=>{st.q=e.target.value.trim();renderAtlas();}
 $("#vq").addEventListener("input",e=>{st.vq=e.target.value.trim();renderVendors();});
 $("#tq").addEventListener("input",renderTerms);
 window.addEventListener("hashchange",route);
+let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(st.view==="atlas"&&$("#grid").dataset.n&&+$("#grid").dataset.n!==gridCols())renderAtlas();},150);});
 
 /* hero specimens */
 $("#hero-strip").innerHTML=["mon-thai","nep","orc-ple","hoy-car","sar"].map(id=>{const s=SPI[id];return `<button class="hs" data-sp="${id}" aria-label="${esc(s.zh)}"><span class="sheet">${pic(s,1)}</span><span class="hl"><span class="mono">${acc(s.no)}</span>${esc(s.zh)}</span></button>`;}).join("");
