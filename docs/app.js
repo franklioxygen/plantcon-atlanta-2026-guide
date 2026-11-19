@@ -137,7 +137,7 @@ function gotoVendor(i){
 /* ───────── lessons ───────── */
 function renderLessons(){
   const L=window.LESSONS;
-  $("#lnav").innerHTML=L.map(l=>`<button class="lbtn ${st.lesson===l.n?"on":""}" data-l="${l.n}"><span class="ln ${done.includes(l.n)?"ok":""}">${done.includes(l.n)?"✓":l.n}</span><span><b>${esc(l.t)}</b><small>${esc(l.s)}</small></span></button>`).join("")+`<button class="lbtn ${st.lesson===99?"on":""}" data-l="99"><span class="ln">?</span><span><b>小测验</b><small>10 题，检验一下</small></span></button>`;
+  $("#lnav").innerHTML=L.map(l=>`<button class="lbtn ${st.lesson===l.n?"on":""}" data-l="${l.n}"><span class="ln ${done.includes(l.n)?"ok":""}">${done.includes(l.n)?"✓":l.n}</span><span><b>${esc(l.t)}</b><small>${esc(l.s)}</small></span></button>`).join("")+`<button class="lbtn ${st.lesson===99?"on":""}" data-l="99"><span class="ln">?</span><span><b>小测验</b><small>${window.QUIZ.length} 题，检验一下</small></span></button>`;
   $("#lprog").style.setProperty("--p",(done.length/L.length*100)+"%");$("#lprogt").textContent=`已读 ${done.length}/${L.length}`;
   if(st.lesson===99){renderQuiz();return;}
   const l=L.find(x=>x.n===st.lesson)||L[0];
@@ -147,7 +147,7 @@ function renderLessons(){
 let qa={};
 function renderQuiz(){
   const Q=window.QUIZ;const score=Object.keys(qa).filter(k=>qa[k]===Q[k].a).length;
-  $("#lbody").innerHTML=`<p class="eyebrow">学完 8 课后</p><h2>小测验</h2><p class="sub">点选答案会立即显示解析。全部答对，说明你已经具备逛展所需的中级认知。</p>
+  $("#lbody").innerHTML=`<p class="eyebrow">学完 ${window.LESSONS.length} 课后</p><h2>小测验</h2><p class="sub">点选答案会立即显示解析。全部答对，说明你已经具备逛展所需的中级认知。</p>
   <ol class="quiz">${Q.map((q,i)=>`<li><p class="qq">${esc(q.q)}</p><div class="opts">${q.o.map((o,j)=>{const picked=qa[i]===j,ans=qa[i]!=null;return `<button class="opt ${ans&&j===q.a?"right":""} ${picked&&j!==q.a?"wrong":""}" data-q="${i}" data-o="${j}" ${ans?"disabled":""}>${esc(o)}</button>`;}).join("")}</div>${qa[i]!=null?`<p class="qe ${qa[i]===q.a?"ok":"no"}">${qa[i]===q.a?"答对了。":"再想想："}${esc(q.e)}</p>`:""}</li>`).join("")}</ol>
   <div class="qscore"><b>${score}</b> / ${Q.length} 正确 · 已答 ${Object.keys(qa).length} 题 <button class="btn ghost" id="qreset">重新作答</button></div>`;
 }
@@ -205,6 +205,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.term){$("#gres").hidden=true;show("terms");$("#tq").value=t.dataset.term;renderTerms();return;}
   if(t.dataset.allsp!=null){$("#gres").hidden=true;st.q=t.dataset.allsp;$("#aq").value=st.q;show("atlas");return;}
   if(t.dataset.grp){st.grp=t.dataset.grp;renderAtlas();return;}
+  if(t.dataset.gogrp){Object.assign(st,{grp:t.dataset.gogrp,lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";show("atlas");window.scrollTo({top:$("#views").offsetTop-70});return;}
   if(t.dataset.lvl){st.lvl=t.dataset.lvl;renderAtlas();return;}
   if(t.id==="catsafe"){st.cat=!st.cat;renderAtlas();return;}
   if(t.id==="clearf"){Object.assign(st,{grp:"all",lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";renderAtlas();return;}

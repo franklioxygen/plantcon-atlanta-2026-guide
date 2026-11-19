@@ -260,6 +260,25 @@ footer summary{cursor:pointer;color:var(--ink);font-weight:700}
 .tiers .pr{font-size:15px;color:var(--stamp)}
 .tiers span{font:500 13px var(--mono)}
 .tiers em{font-style:normal;font-size:12.5px;color:var(--muted);line-height:1.5}
+.ladder{margin:10px 0 12px;display:flex;flex-direction:column;gap:2px}
+.ladder div{display:grid;grid-template-columns:96px 1fr;gap:10px;align-items:baseline;margin-left:calc(var(--i)*16px);padding:5px 12px;border-left:3px solid var(--stamp);background:color-mix(in srgb,var(--stamp) calc(4% + var(--i)*2%),transparent);border-radius:0 6px 6px 0}
+.ladder .k{font:500 11px var(--mono);color:var(--stamp)}
+.tree{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.tb{border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;padding:8px 12px;background:var(--paper)}
+.tb.fern-b{border-left-color:#2E7A6A}.tb.mag-b{border-left-color:#8A7A2E}.tb.mono-b{border-left-color:#3E7C8C}.tb.di-b{border-left-color:#A23B5B}
+.tn{font-weight:700;margin:0 0 4px}.tn em{font-style:normal;font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
+.tl{margin:0;font-size:14px}.tb ul{margin:0;padding-left:18px}.tb li{margin:3px 0;font-size:14px}
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:12px 0}
+.gc{border:1px solid var(--line);border-top:4px solid var(--gh);border-radius:8px;padding:10px 14px 12px;background:var(--paper);display:flex;flex-direction:column}
+.gc h5{font-family:var(--display);font-weight:400;font-size:21px;margin:0;line-height:1.3}
+.gc .lvl{font:500 11.5px var(--mono);color:var(--muted);margin:2px 0 4px}
+.gc ul{padding-left:18px;margin:4px 0}.gc li{font-size:13.5px;margin:4px 0;line-height:1.6}
+.gc .mini-h{font:500 11px var(--mono);color:var(--stamp);letter-spacing:.06em;margin:8px 0 2px}
+.genus{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:13px;line-height:1.5}
+.genus b{white-space:nowrap;font-weight:500}
+.gc .care{font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:6px;margin:8px 0}
+.btn.sm{padding:4px 12px;font-size:13px;align-self:flex-start;margin-top:auto}
+.prose:has(.gcards){max-width:none}
 .lfoot{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
 .quiz{padding-left:20px}
 .quiz li{margin:0 0 18px}
@@ -368,7 +387,7 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
       <li><b id="stat-ga">0</b><span>家佐治亚本地</span></li>
     </ul>
     <div class="steps">
-      <button class="step" data-view="lessons"><span class="n">1</span><span><b>先上入门课</b><small>8 节，约 30 分钟</small></span></button>
+      <button class="step" data-view="lessons"><span class="n">1</span><span><b>先上入门课</b><small>9 节，约 40 分钟</small></span></button>
       <button class="step" data-view="atlas"><span class="n">2</span><span><b>按类群翻图鉴</b><small>可只看对猫友好的</small></span></button>
       <button class="step" data-view="plan"><span class="n">3</span><span><b>规划逛展路线</b><small>票务、讲座、检查清单</small></span></button>
     </div>
