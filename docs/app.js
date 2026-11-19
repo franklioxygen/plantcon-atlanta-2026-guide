@@ -23,6 +23,7 @@ const PH=window.PHOTOS||{};
 const pic=(s,eager)=>PH[s.id]?`<img src="photos/${s.id}.jpg" alt="${esc(s.zh)}（${esc(s.la)}）照片" ${eager?"":"loading=\"lazy\" "}decoding="async">`:art(s);
 const credit=s=>{const p=PH[s.id];if(!p)return "";return `${p.n?`<span class="pnote">${esc(p.n)}</span>`:""}照片：${esc(p.a)} · ${p.lu?`<a href="${esc(p.lu)}" target="_blank" rel="noopener">${esc(p.l)}</a>`:esc(p.l)} · <a href="${esc(p.p)}" target="_blank" rel="noopener">Wikimedia Commons</a>`;};
 
+function labelTables(root){$$("table.tbl",root).forEach(t=>{const h=$$("thead th",t).map(x=>x.textContent.trim());if(!h.length)return;$$("tbody tr",t).forEach(tr=>{Array.from(tr.children).forEach((c,i)=>{if(i>0&&h[i])c.setAttribute("data-label",h[i]);});});});}
 /* ───────── state ───────── */
 const st={view:"atlas",grp:"all",lvl:"all",cat:false,sort:"group",tag:"",q:"",vq:"",vcat:"P",vtag:"",vga:false,vrow:false,lesson:store.get("lesson",1)};
 let done=store.get("done",[]), checks=store.get("checks",[]);
@@ -94,7 +95,7 @@ function openSp(id){
    <section class="where2"><h4>在哪个展位找</h4>${s.vcount?`${s.vx.length?`<p class="sub">官网或店名明确列出该类植物：</p><div class="vchips">${s.vx.map(v=>vchip(v)).join("")}</div>`:""}${s.vg.length?`<p class="sub">综合卖家（卖“兰花/多肉/稀有天南星”等大类，不保证有这一种）：</p><div class="vchips">${s.vg.map(v=>vchip(v,1)).join("")}</div>`:""}`:`<p class="sub">没有卖家在官网明确列出它，综合观叶摊位常能遇到，现场问一句学名。</p>`}</section>
   </div></div>`;
   $("#dlg-pos").textContent=`${curIdx+1} / ${curList.length}`;
-  const d=$("#dlg");d.hidden=false;document.body.classList.add("noscroll");$("#dlg-close").focus();
+  const d=$("#dlg");d.hidden=false;$(".dlg-panel").scrollTop=0;document.body.classList.add("noscroll");$("#dlg-close").focus();
   if(location.hash!=="#sp-"+id)history.replaceState(null,"","#sp-"+id);
 }
 function closeDlg(){const d=$("#dlg");if(d.hidden)return;d.hidden=true;document.body.classList.remove("noscroll");if(location.hash.startsWith("#sp-"))history.replaceState(null,"","#atlas");}
@@ -139,10 +140,11 @@ function renderLessons(){
   const L=window.LESSONS;
   $("#lnav").innerHTML=L.map(l=>`<button class="lbtn ${st.lesson===l.n?"on":""}" data-l="${l.n}"><span class="ln ${done.includes(l.n)?"ok":""}">${done.includes(l.n)?"✓":l.n}</span><span><b>${esc(l.t)}</b><small>${esc(l.s)}</small></span></button>`).join("")+`<button class="lbtn ${st.lesson===99?"on":""}" data-l="99"><span class="ln">?</span><span><b>小测验</b><small>${window.QUIZ.length} 题，检验一下</small></span></button>`;
   $("#lprog").style.setProperty("--p",(done.length/L.length*100)+"%");$("#lprogt").textContent=`已读 ${done.length}/${L.length}`;
-  if(st.lesson===99){renderQuiz();return;}
+  if(st.lesson===99){renderQuiz();const nav=$("#lnav"),on=$("#lnav .lbtn.on");if(nav&&on&&nav.scrollWidth>nav.clientWidth)nav.scrollLeft=on.offsetLeft-16;return;}
   const l=L.find(x=>x.n===st.lesson)||L[0];
   $("#lbody").innerHTML=`<p class="eyebrow">第 ${l.n} 课 · ${esc(l.s)}</p><h2>${esc(l.t)}</h2><div class="prose">${l.b}</div>
   <div class="lfoot"><button class="btn ${done.includes(l.n)?"ghost":""}" id="ldone">${done.includes(l.n)?"已读 ✓":"标记为已读"}</button>${l.n<L.length?`<button class="btn" data-l="${l.n+1}">下一课：${esc(L[l.n].t)} →</button>`:`<button class="btn" data-l="99">去做小测验 →</button>`}</div>`;
+  labelTables($("#lbody"));const nav=$("#lnav"),on=$("#lnav .lbtn.on");if(nav&&on&&nav.scrollWidth>nav.clientWidth)nav.scrollLeft=on.offsetLeft-16;
 }
 let qa={};
 function renderQuiz(){
@@ -157,6 +159,7 @@ function renderPlan(){
   const P=window.PLAN;
   $("#tickets").innerHTML=P.tickets.map(t=>`<tr><th>${esc(t[0])}</th><td class="num">${esc(t[1])}</td><td>${esc(t[2])}</td><td>${esc(t[3])}</td></tr>`).join("");
   $("#talks").innerHTML=P.talks.map(t=>`<tr><td class="mono">${esc(t[0])}</td><th>${esc(t[1])}</th><td>${esc(t[2])}</td><td>${esc(t[3])}</td></tr>`).join("");
+  labelTables($("#view-plan"));
   $("#routes").innerHTML=P.routes.map(r=>`<div class="route"><h4>${esc(r.t)}</h4><p>${esc(r.d)}</p><div class="vchips">${r.v.map(n=>{const v=VBYNAME[n];return v?`<button class="vchip" data-v="${v.i}"><span class="mono">${esc(v.first)}</span>${esc(v.n)}</button>`:"";}).join("")}</div></div>`).join("");
   $("#checklist").innerHTML=P.checklist.map((c,i)=>`<li><label><input type="checkbox" id="ck${i}" data-ck="${i}" ${checks.includes(i)?"checked":""}> <span>${esc(c)}</span></label></li>`).join("");
   const firsts=["hoy-car","mar-leu","orc-pha","til","haw","dro","pep","pil"];
@@ -199,13 +202,13 @@ function route(){
 /* ───────── events ───────── */
 document.addEventListener("click",e=>{
   const t=e.target.closest("button,a");if(!t)return;
-  if(t.dataset.view){e.preventDefault();closeDlg();show(t.dataset.view);window.scrollTo({top:$("#views").offsetTop-70});return;}
+  if(t.dataset.view){e.preventDefault();closeDlg();show(t.dataset.view);window.scrollTo({top:$("#views").offsetTop-$(".top").offsetHeight-6});return;}
   if(t.dataset.sp){$("#gres").hidden=true;if(st.view!=="atlas")show("atlas");openSp(t.dataset.sp);return;}
   if(t.dataset.v!=null&&t.dataset.v!==""){$("#gres").hidden=true;gotoVendor(+t.dataset.v);return;}
   if(t.dataset.term){$("#gres").hidden=true;show("terms");$("#tq").value=t.dataset.term;renderTerms();return;}
   if(t.dataset.allsp!=null){$("#gres").hidden=true;st.q=t.dataset.allsp;$("#aq").value=st.q;show("atlas");return;}
   if(t.dataset.grp){st.grp=t.dataset.grp;renderAtlas();return;}
-  if(t.dataset.gogrp){Object.assign(st,{grp:t.dataset.gogrp,lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";show("atlas");window.scrollTo({top:$("#views").offsetTop-70});return;}
+  if(t.dataset.gogrp){Object.assign(st,{grp:t.dataset.gogrp,lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";show("atlas");window.scrollTo({top:$("#views").offsetTop-$(".top").offsetHeight-6});return;}
   if(t.dataset.lvl){st.lvl=t.dataset.lvl;renderAtlas();return;}
   if(t.id==="catsafe"){st.cat=!st.cat;renderAtlas();return;}
   if(t.id==="clearf"){Object.assign(st,{grp:"all",lvl:"all",cat:false,tag:"",q:""});$("#aq").value="";renderAtlas();return;}
@@ -222,6 +225,9 @@ document.addEventListener("click",e=>{
   if(t.id==="dlg-prev"){step(-1);return;}if(t.id==="dlg-next"){step(1);return;}
 });
 $("#dlg-bg").addEventListener("click",closeDlg);
+(function(){let x0=null,y0=0;const b=$("#dlg-body");
+  b.addEventListener("touchstart",e=>{if(e.touches.length!==1){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+  b.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*2)step(dx<0?1:-1);},{passive:true});})();
 document.addEventListener("keydown",e=>{if(!$("#dlg").hidden){if(e.key==="Escape")closeDlg();if(e.key==="ArrowRight")step(1);if(e.key==="ArrowLeft")step(-1);}else if(e.key==="Escape")$("#gres").hidden=true;
   if(e.key==="/"&&document.activeElement.tagName!=="INPUT"){e.preventDefault();$("#gq").focus();}});
 document.addEventListener("change",e=>{const t=e.target;

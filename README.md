@@ -37,6 +37,7 @@ scripts/
   browser/fetch-wikimedia-photos.js 在 commons.wikimedia.org 的浏览器控制台运行，搜索、压缩、打包照片
   build-photo-credits.py            把照片包放进 docs/ 并生成署名
   check/screenshots.py              无头浏览器截图与错误检查
+  check/mobile-audit.py             手机宽度逐页截图与横向溢出检查
   check/illustrations-contact-sheet.html  插图引擎总览
 research/
   sources.md              资料来源与卖家官网查证记录

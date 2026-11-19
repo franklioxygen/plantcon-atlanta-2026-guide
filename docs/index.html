@@ -54,6 +54,9 @@ i,.latin{font-family:var(--latin);font-style:italic}
 .tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
 .tab{border:0;background:none;padding:8px 10px;white-space:nowrap;color:var(--muted);border-bottom:2px solid transparent;border-radius:0}
 .tab[aria-current="page"]{color:var(--ink);border-bottom-color:var(--stamp);font-weight:700}
+.tab svg{display:none;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.tl-short{display:none}
+#lbody,.vcard{scroll-margin-top:72px}
 .gsearch{position:relative;width:280px;flex:none}
 .gsearch input{width:100%;padding:8px 34px 8px 14px;border:1px solid var(--line);background:var(--sheet);border-radius:999px}
 .gsearch kbd{position:absolute;right:10px;top:8px;font:11px var(--mono);color:var(--muted);border:1px solid var(--line);padding:0 5px;border-radius:4px}
@@ -222,7 +225,7 @@ footer summary{cursor:pointer;color:var(--ink);font-weight:700}
 .fine{font-size:12.5px;color:var(--muted);margin-top:18px;max-width:60em}
 
 /* lessons */
-.lgrid{display:grid;grid-template-columns:290px 1fr;gap:28px;align-items:start}
+.lgrid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:28px;align-items:start}
 .lside{position:sticky;top:76px}
 .prog{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin:0 0 4px}
 .prog i{display:block;height:100%;width:var(--p);background:var(--stamp)}
@@ -339,26 +342,97 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   .hero .wrap{grid-template-columns:minmax(0,1fr)}
   .stampmark{display:none}
   .gsearch{width:200px}
-  .lgrid{grid-template-columns:1fr}.lside{position:static}
-  #lnav{flex-direction:row;overflow-x:auto}.lbtn{min-width:200px}
+  .lgrid{grid-template-columns:minmax(0,1fr)}.lside{position:static;min-width:0}
+  #lnav{flex-direction:row;overflow-x:auto}.lbtn{min-width:200px;flex:none}
   .d-grid{grid-template-columns:1fr}.d-sheet{position:static}
   .sheet.big{max-width:420px;width:100%}
   .two,footer .cols2,.ginfo{grid-template-columns:1fr}
 }
 @media (max-width:640px){
-  .top .wrap{height:auto;flex-wrap:wrap;padding-top:8px;padding-bottom:4px;gap:6px}
-  .brand{font-size:17px}
-  .gsearch{order:2;width:auto;flex:1}
-  .tabs{order:3;flex-basis:100%}
-  .hs{width:112px;margin-left:-22px}
+  /* 手机：顶部只留标题和搜索，板块切换改为底部标签栏 */
+  .top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--paper)}
+  .top .wrap{height:54px;gap:10px}
+  .brand{font-size:17px}.brand .mono{display:none}
+  .gsearch{flex:1;width:auto}
+  .gsearch kbd{display:none}
+  .gsearch input{padding:8px 14px;font-size:16px}
+  #gres{position:fixed;left:8px;right:8px;top:58px;width:auto;max-height:calc(100vh - 150px)}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--paper);border-top:1px solid var(--line);padding:4px 6px max(6px,env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.07);overflow:visible}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;padding:6px 0 4px;border-bottom:0;border-radius:10px;min-height:48px;justify-content:center}
+  .tab svg{display:block}
+  .tab[aria-current="page"]{color:var(--stamp);font-weight:700;background:color-mix(in srgb,var(--stamp) 10%,transparent)}
+  .tl-long{display:none}.tl-short{display:inline}
+  body{padding-bottom:76px}
+  /* 首屏 */
+  .hero{padding:22px 0 16px}
+  .hero h1{font-size:52px}
+  .facts-row{gap:8px 20px;margin:16px 0}
+  .facts-row b{font-size:22px}
+  .steps{display:grid;grid-template-columns:1fr;gap:8px}
+  .step{width:100%}
+  .hs{width:104px;margin-left:-20px}
   .hs:nth-child(n+4){display:none}
-  .lede{font-size:16px}
-  #grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-  .cb{padding:10px}
-  .cb h3{font-size:18px}
+  main{padding:16px 0 40px}
+  /* 筛选：一行横向滑动 */
+  .controls{gap:10px}
+  #grp,#vcat,.crow.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px}
+  #grp::-webkit-scrollbar,#vcat::-webkit-scrollbar,.crow.scroll::-webkit-scrollbar,#lnav::-webkit-scrollbar{display:none}
+  #grp>*,#vcat>*,.crow.scroll>*{flex:none}
+  .field{font-size:16px}
+  .ginfo{padding:14px 16px;gap:10px}
+  .ginfo h2{font-size:26px}
+  /* 卡片 */
+  #grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card:hover{transform:none;box-shadow:none}
+  .cb{padding:9px 10px 10px}
+  .cb h3{font-size:17px}
+  .cb .latin{font-size:12.5px}
+  .meta{gap:5px 6px}
   .hook{display:none}
-  #lbody{padding:18px 16px}
-  .spec-row{grid-template-columns:1fr}
+  .where{font-size:11px}
+  /* 详情：全屏，可左右滑动切换 */
+  #dlg{padding:0}
+  .dlg-panel{width:100%;height:100%;max-height:100%;border-radius:0}
+  .dlg-bar{padding:8px 10px;gap:6px}
+  .dlg-bar button{padding:7px 11px;font-size:13px}
+  .d-grid{padding:14px 16px 28px;gap:16px}
+  .sheet.big{aspect-ratio:4/3;max-width:none}
+  .facts{grid-template-columns:1fr 1fr}
+  .d-text section p,.d-text .adv p{margin-left:0}
+  .d-text .adv{padding:10px}
+  /* 入门课 */
+  .lgrid{grid-template-columns:minmax(0,1fr);gap:12px}
+  .lside{min-width:0}
+  #lnav{flex-direction:row;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px;scroll-snap-type:x proximity}
+  .lbtn{min-width:176px;flex:none;scroll-snap-align:start;border-color:var(--line);background:var(--sheet)}
+  #lbody{padding:18px 16px;border-radius:8px}
+  .spec-row{grid-template-columns:1fr;gap:2px}
+  .ladder div{grid-template-columns:72px 1fr;margin-left:calc(var(--i)*8px);padding:5px 10px}
+  .cols,.tiers{grid-template-columns:1fr}
+  .qscore{bottom:70px}
+  /* 表格改为一条一条的卡片 */
+  .tbl,.tbl tbody,.prose .tbl{display:block;overflow:visible}
+  .tbl thead{display:none}
+  .tbl tr{display:block;padding:10px 0;border-bottom:1px solid var(--line)}
+  .tbl th,.tbl td{display:block;border:0;padding:2px 0}
+  .tbl tr>:first-child{font-weight:700;font-size:15px}
+  .tbl [data-label]::before{content:attr(data-label);display:block;font:500 11px var(--mono);color:var(--muted);letter-spacing:.04em;margin-top:4px}
+  .tbl .num{white-space:normal}
+  .panel{padding:2px 14px}
+  .panel .tbl tr:last-child{border-bottom:0}
+  /* 其他板块 */
+  .ph{font-size:24px;margin-top:24px}
+  .vgrid,#tlist,.routes{grid-template-columns:minmax(0,1fr)}
+  .rowh{font-size:20px}
+  footer{padding-bottom:30px}
+}
+@media (pointer:coarse){
+  .chip{padding:7px 13px}
+  .toggle,.seg button{padding:8px 12px}
+  .vt{padding:3px 10px}.spl{padding:2px 8px}
+  .vchip{padding:7px 10px}
+  .opt{padding:9px 12px}
+}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
@@ -367,11 +441,11 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
 <header class="top"><div class="wrap">
   <div class="brand">植物图鉴 <span class="mono">PLANTCON ATL ’26</span></div>
   <nav class="tabs" aria-label="主要板块">
-    <button class="tab" data-view="atlas">物种图鉴</button>
-    <button class="tab" data-view="lessons">入门课</button>
-    <button class="tab" data-view="vendors">参展商</button>
-    <button class="tab" data-view="plan">逛展攻略</button>
-    <button class="tab" data-view="terms">术语表</button>
+    <button class="tab" data-view="atlas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C5 10.5 10.5 5 20 4c-.5 9.5-6 15-14.5 15"/><path d="M5 19l8.5-8.5"/></svg><span class="tl-long">物种图鉴</span><span class="tl-short">图鉴</span></button>
+    <button class="tab" data-view="lessons"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h6a3 3 0 0 1 3 3v12a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v12a2.5 2.5 0 0 1 2.5-2.5H21z"/></svg><span class="tl-long">入门课</span><span class="tl-short">入门课</span></button>
+    <button class="tab" data-view="vendors"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17L19 5H5z"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg><span class="tl-long">参展商</span><span class="tl-short">参展商</span></button>
+    <button class="tab" data-view="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/></svg><span class="tl-long">逛展攻略</span><span class="tl-short">攻略</span></button>
+    <button class="tab" data-view="terms"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 18l4-11 4 11M5 14h5"/><circle cx="16.5" cy="15" r="2.8"/><path d="M19.3 11.5V18"/></svg><span class="tl-long">术语表</span><span class="tl-short">术语</span></button>
   </nav>
   <div class="gsearch"><label for="gq" class="sr" hidden>全站搜索</label><input id="gq" type="search" placeholder="搜植物、卖家、展位、术语" autocomplete="off"><kbd>/</kbd><div id="gres" hidden></div></div>
 </div></header>
@@ -401,7 +475,7 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   <div class="controls">
     <div class="crow"><input class="field grow" id="aq" type="search" placeholder="筛选图鉴：中文名 / 学名 / 英文名，例如 花烛、Hoya、Pink" aria-label="筛选图鉴"></div>
     <div class="chips" id="grp"></div>
-    <div class="crow">
+    <div class="crow scroll">
       <div class="seg" id="lvl" role="group" aria-label="难度"><button data-lvl="all">全部难度</button><button data-lvl="1">入门</button><button data-lvl="2">进阶</button><button data-lvl="3">挑战</button></div>
       <button class="toggle" id="catsafe" aria-pressed="false"><span class="box"></span>只看对猫友好</button>
       <select class="field" id="tagsel" aria-label="按特征筛选"></select>
@@ -425,7 +499,7 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   <div class="controls">
     <div class="crow"><input class="field grow" id="vq" type="search" placeholder="搜名称、所在地、展位号或主营，例如 C11、兰花、Atlanta" aria-label="搜索参展商"></div>
     <div class="chips" id="vcat"></div>
-    <div class="crow">
+    <div class="crow scroll">
       <select class="field" id="vtagsel" aria-label="按主营筛选"></select>
       <button class="toggle" id="vga" aria-pressed="false"><span class="box"></span>只看佐治亚本地</button>
       <button class="toggle" id="vrow" aria-pressed="false"><span class="box"></span>按展位排号分组</button>
