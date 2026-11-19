@@ -59,6 +59,8 @@ i,.latin{font-family:var(--latin);font-style:italic}
 .tab svg{display:none;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .tl-short{display:none}
 #lbody,.vcard{scroll-margin-top:72px}
+#views{scroll-margin-top:62px}
+.noscroll #scroller{overflow:hidden}
 .gsearch{position:relative;width:280px;flex:none}
 .gsearch input{width:100%;padding:8px 34px 8px 14px;border:1px solid var(--line);background:var(--sheet);border-radius:999px}
 .gsearch kbd{position:absolute;right:10px;top:8px;font:11px var(--mono);color:var(--muted);border:1px solid var(--line);padding:0 5px;border-radius:4px}
@@ -359,14 +361,19 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   .gsearch kbd{display:none}
   .gsearch input{padding:8px 14px;font-size:16px}
   #gres{position:fixed;left:8px;right:8px;top:calc(58px + env(safe-area-inset-top));width:auto;max-height:calc(100vh - 150px)}
-  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--paper);border-top:1px solid var(--line);padding:4px 6px max(6px,env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.07);overflow:visible;transform:translateZ(0)}
-  /* iOS 地址栏收起/展开的动画过程中，底栏下方可能露出缝隙：用一块同色背景向下延伸盖住 */
-  .tabs::after{content:"";position:absolute;left:0;right:0;top:100%;height:160px;background:var(--paper);pointer-events:none}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--paper);border-top:1px solid var(--line);padding:4px 6px max(6px,env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.07);overflow:visible}
   .tab{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;padding:6px 0 4px;border-bottom:0;border-radius:10px;min-height:48px;justify-content:center}
   .tab svg{display:block}
   .tab[aria-current="page"]{color:var(--stamp);font-weight:700;background:color-mix(in srgb,var(--stamp) 10%,transparent)}
   .tl-long{display:none}.tl-short{display:inline}
-  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  /* iOS 26 Safari 在地址栏伸缩时会挪动固定在底部的元素，露出缝隙。
+     手机上让整页不滚动、只滚动中间的内容区，地址栏就不会伸缩，底栏保持不动。 */
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  body{display:flex;flex-direction:column}
+  .top{position:relative;flex:none}
+  #scroller{flex:1;min-height:0;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  #views{scroll-margin-top:0}
+  #lbody,.vcard{scroll-margin-top:10px}
   /* 首屏 */
   .hero{padding:22px 0 16px}
   .hero h1{font-size:52px}
@@ -457,6 +464,7 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   <div class="gsearch"><label for="gq" class="sr" hidden>全站搜索</label><input id="gq" type="search" placeholder="搜植物、卖家、展位、术语" autocomplete="off"><kbd>/</kbd><div id="gres" hidden></div></div>
 </div></header>
 
+<div id="scroller">
 <section class="hero"><div class="wrap">
   <div>
     <p class="eyebrow">PlantCon Atlanta · 2026 年 12 月 5–6 日 · AmericasMart</p>
@@ -571,6 +579,7 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   </ul></div>
   <div><h4>说明</h4><p>本图鉴为个人逛展参考，非 PlantCon 官方出品。养护参数是通用建议，具体以卖家针对该株的说明为准。宠物误食请联系兽医或 ASPCA 动物中毒热线 (888) 426-4435。</p></div>
 </div><div class="wrap"><details><summary>照片署名（87 张，均来自 Wikimedia Commons）</summary><p>照片按各自的知识共享协议或公有领域使用，已缩放并压缩；CC BY-SA 照片的改动版本沿用相同协议。点击文件名可查看原图与作者信息。</p><ul id="credits"></ul></details></div></footer>
+</div>
 
 <div id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dlg-title">
   <div id="dlg-bg"></div>
@@ -580,11 +589,11 @@ footer .cols2{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
   </div>
 </div>
 
-<script src="data-species.js"></script>
-<script src="data-vendors.js"></script>
-<script src="data-learn.js"></script>
-<script src="data-photos.js"></script>
-<script src="illo.js"></script>
-<script src="app.js"></script>
+<script src="data-species.js?v=20261119c"></script>
+<script src="data-vendors.js?v=20261119c"></script>
+<script src="data-learn.js?v=20261119c"></script>
+<script src="data-photos.js?v=20261119c"></script>
+<script src="illo.js?v=20261119c"></script>
+<script src="app.js?v=20261119c"></script>
 </body>
 </html>
